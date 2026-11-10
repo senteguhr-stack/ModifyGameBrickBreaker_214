@@ -158,9 +158,77 @@ class Game:
 
         self.flash = 0.08
 
-    def hit_brick(self, brick, ball):
+    def hit_brick(self, brick, ball, previous_pos):
+        """
+        Memproses tabrakan bola dengan brick dan memantulkan bola
+        berdasarkan sisi brick yang terkena.
+        """
+        previous_rect = pygame.Rect(
+            int(previous_pos.x - ball.radius),
+            int(previous_pos.y - ball.radius),
+            ball.radius * 2,
+            ball.radius * 2
+        )
+        current_rect = ball.rect
+
+        # Deteksi sisi tabrakan berdasarkan posisi bola pada frame sebelumnya.
+        hit_horizontal = (
+            previous_rect.right <= brick.rect.left
+            and current_rect.right >= brick.rect.left
+        ) or (
+            previous_rect.left >= brick.rect.right
+            and current_rect.left <= brick.rect.right
+        )
+
+        hit_vertical = (
+            previous_rect.bottom <= brick.rect.top
+            and current_rect.bottom >= brick.rect.top
+        ) or (
+            previous_rect.top >= brick.rect.bottom
+            and current_rect.top <= brick.rect.bottom
+        )
+
+        if hit_horizontal and not hit_vertical:
+            if previous_pos.x < brick.rect.centerx:
+                ball.pos.x = brick.rect.left - ball.radius
+                ball.vel.x = -abs(ball.vel.x)
+            else:
+                ball.pos.x = brick.rect.right + ball.radius
+                ball.vel.x = abs(ball.vel.x)
+        elif hit_vertical and not hit_horizontal:
+            if previous_pos.y < brick.rect.centery:
+                ball.pos.y = brick.rect.top - ball.radius
+                ball.vel.y = -abs(ball.vel.y)
+            else:
+                ball.pos.y = brick.rect.bottom + ball.radius
+                ball.vel.y = abs(ball.vel.y)
+        else:
+            # Fallback untuk kondisi bola sudah tumpang tindih dengan brick
+            # pada awal frame, misalnya akibat frame rate yang berubah.
+            overlap_left = current_rect.right - brick.rect.left
+            overlap_right = brick.rect.right - current_rect.left
+            overlap_top = current_rect.bottom - brick.rect.top
+            overlap_bottom = brick.rect.bottom - current_rect.top
+
+            penetration_x = min(overlap_left, overlap_right)
+            penetration_y = min(overlap_top, overlap_bottom)
+
+            if penetration_x < penetration_y:
+                if overlap_left < overlap_right:
+                    ball.pos.x = brick.rect.left - ball.radius
+                    ball.vel.x = -abs(ball.vel.x)
+                else:
+                    ball.pos.x = brick.rect.right + ball.radius
+                    ball.vel.x = abs(ball.vel.x)
+            else:
+                if overlap_top < overlap_bottom:
+                    ball.pos.y = brick.rect.top - ball.radius
+                    ball.vel.y = -abs(ball.vel.y)
+                else:
+                    ball.pos.y = brick.rect.bottom + ball.radius
+                    ball.vel.y = abs(ball.vel.y)
+
         destroyed = brick.hit()
-        ball.vel.y *= -1
 
         # Memainkan suara ketika bola mengenai brick.
         self.audio.play("hit")
@@ -210,6 +278,7 @@ class Game:
             self.combo = 0
 
         for ball in self.balls[:]:
+            previous_pos = ball.pos.copy()
             lost = ball.update(dt, self.paddle)
 
             if lost:
@@ -221,7 +290,7 @@ class Game:
 
             for brick in self.bricks:
                 if brick.alive and ball.rect.colliderect(brick.rect):
-                    self.hit_brick(brick, ball)
+                    self.hit_brick(brick, ball, previous_pos)
                     break
 
             if self.boss and ball.rect.colliderect(self.boss["rect"]):
