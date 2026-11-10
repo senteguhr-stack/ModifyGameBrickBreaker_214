@@ -69,4 +69,3 @@ The game works without these files. The music volume setting is stored for futur
 ## Save data
 High score and settings are stored in `data/highscore.json`.
 
-![alt text](image.png)
