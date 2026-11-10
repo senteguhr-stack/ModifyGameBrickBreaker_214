@@ -69,3 +69,17 @@ The game works without these files. The music volume setting is stored for futur
 ## Save data
 High score and settings are stored in `data/highscore.json`.
 
+# Modify Game Brick Breaker
+
+Game Brick Breaker menggunakan Python dan Pygame.
+
+## Fitur Game
+- Sistem skor
+- Sistem nyawa
+- Power-up
+- Sistem level
+- Tampilan Neon Arcade
+
+## Teknologi
+- Python
+- Pygame
