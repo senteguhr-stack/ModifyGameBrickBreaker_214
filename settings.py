@@ -1,0 +1,23 @@
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+ASSET_DIR = BASE_DIR / "assets"
+IMAGE_DIR = ASSET_DIR / "images"
+SOUND_DIR = ASSET_DIR / "sounds"
+DATA_DIR = BASE_DIR / "data"
+
+WIDTH, HEIGHT = 1100, 760
+FPS = 60
+TITLE = "AMBATUBALL"
+TAGLINE = "ONE BALL. COUNTLESS DESTRUCTIONS."
+
+BG = (8, 8, 18)
+PANEL = (17, 18, 38)
+CYAN = (0, 245, 255)
+PURPLE = (138, 43, 226)
+MAGENTA = (255, 0, 255)
+WHITE = (245, 248, 255)
+MUTED = (130, 145, 170)
+ORANGE = (255, 130, 35)
+RED = (255, 55, 80)
+GREEN = (80, 255, 170)
